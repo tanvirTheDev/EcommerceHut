@@ -1,3 +1,4 @@
+import { SanityLive } from "@/sanity/lib/live";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import Header from "../../components/Header";
@@ -21,6 +22,7 @@ export default function RootLayout({
             <Header />
             {children}
           </main>
+          <SanityLive />
         </body>
       </html>
     </ClerkProvider>
