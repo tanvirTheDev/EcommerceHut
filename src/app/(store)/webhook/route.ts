@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import stripe from "@/lib/stripe";
 import { backendClient } from "@/sanity/lib/backendClient";
 import { headers } from "next/headers";
@@ -100,6 +101,7 @@ async function createOrderInSanity(session: Stripe.Checkout.Session) {
       ? total_details.amount_discount / 100
       : 0,
     products: sanityProducts,
+    totalPrice: amount_total ? amount_total / 100 : 0,
     status: "paid",
     orderDate: new Date().toString(),
   });

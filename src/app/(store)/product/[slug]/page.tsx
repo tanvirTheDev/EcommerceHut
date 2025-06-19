@@ -6,6 +6,9 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Product } from "../../../../../sanity.types";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 60;
+
 const ProductPage = async ({
   params,
 }: {
