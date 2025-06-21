@@ -9,6 +9,8 @@ A modern, full-featured e-commerce web application built with Next.js, TypeScrip
 - **Sanity CMS**: Real-time, headless CMS for product, category, and sale management with live editing.
 - **Atom State Management**: Lightweight and efficient state management for basket and orders.
 - **Stripe Integration**: Secure checkout and payment processing.
+- **Tailwind CSS**: Utility-first CSS framework for rapid UI development.
+- **Shadcn UI**: Accessible, unstyled component library built on Radix UI — customizable with Tailwind.
 - **Responsive UI**: Clean, modern design with reusable components.
 - **Category Filtering & Search**: Easily browse and search products.
 - **Basket & Orders**: Add to basket, view order summary, and track orders.
@@ -18,6 +20,7 @@ A modern, full-featured e-commerce web application built with Next.js, TypeScrip
 ## 🛠️ Tech Stack
 
 - **Frontend**: Next.js, React, TypeScript
+- **Styling**: Tailwind CSS, Shadcn UI, CSS Modules
 - **State Management**: Atom
 - **CMS**: Sanity.io
 - **Payments**: Stripe
