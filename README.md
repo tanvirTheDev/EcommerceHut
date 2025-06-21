@@ -78,7 +78,7 @@ _(See `/public` or deployment for visuals)_
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your-username/ecomerce-website.git
+   git clone https://github.com/tanvirTheDev/EcommerceHut.git
    cd ecomerce-website
    ```
 
@@ -115,6 +115,6 @@ _(See `/public` or deployment for visuals)_
 
 ## 🙋‍♂️ Author
 
-- **Tanvir** — [LinkedIn/GitHub/Portfolio link if desired]
+- **Tanvir Ahamed** — Linkedin [https://www.linkedin.com/in/tanvirthedev/]
 
 ---
