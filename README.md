@@ -46,19 +46,19 @@ ecomerce-website/
 
 ### 🏠 Home Page
 
-![Home Page](./public/screenshots/homepage.png)
+![Home Page](./public/screenshort/homepage.png)
 
 ### 🛒 Basket
 
-![Basket](./public/screenshots/my_basket.png)
+![Basket](./public/screenshort/my_basket.png)
 
 ### Order Summary
 
-![order summary](./public/screenshots/my_orders.png)
+![order summary](./public/screenshort/my_orders.png)
 
 ### 🛠️ Sanity Studio
 
-![Sanity Studio](./public/screenshots/sanity_studio_for_live_editing.png)
+![Sanity Studio](./public/screenshort//sanity_studio_for_live_editing.png)
 
 _(See `/public` or deployment for visuals)_
 
