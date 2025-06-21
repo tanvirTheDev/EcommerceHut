@@ -1,36 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EcommerceHut
 
-## Getting Started
+A modern, full-featured e-commerce web application built with Next.js, TypeScript, Sanity CMS, Atom (state management), and Stripe for payments. The project supports live content editing via Sanity Studio and is production-ready for deployment.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Next.js 13 App Router**: Fast, scalable, and SEO-friendly React framework.
+- **TypeScript**: Type-safe codebase for reliability and maintainability.
+- **Sanity CMS**: Real-time, headless CMS for product, category, and sale management with live editing.
+- **Atom State Management**: Lightweight and efficient state management for basket and orders.
+- **Stripe Integration**: Secure checkout and payment processing.
+- **Responsive UI**: Clean, modern design with reusable components.
+- **Category Filtering & Search**: Easily browse and search products.
+- **Basket & Orders**: Add to basket, view order summary, and track orders.
+- **Live Sale Banners**: Dynamic sales and coupon codes managed via Sanity Studio.
+- **Draft Mode**: Instantly preview unpublished content changes.
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js, React, TypeScript
+- **State Management**: Atom
+- **CMS**: Sanity.io
+- **Payments**: Stripe
+- **Styling**: CSS Modules / Tailwind (if used)
+- **Deployment**: Vercel
+
+## 📦 Project Structure
+
+```
+ecomerce-website/
+  ├── actions/                # Server actions (e.g., Stripe checkout)
+  ├── public/                 # Static assets
+  ├── src/
+  │   ├── app/                # Next.js app directory (routes, layouts)
+  │   ├── components/         # UI components
+  │   ├── lib/                # Utility libraries (Stripe, formatting, etc.)
+  │   └── sanity/             # Sanity CMS config, queries, and schemas
+  ├── sanity.config.ts        # Sanity Studio configuration
+  ├── package.json
+  └── README.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🖥️ Screenshots
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Home page with live sale banner and product grid
+- Basket and order summary
+- Sanity Studio for live content editing
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+_(See `/public` or deployment for visuals)_
 
-## Learn More
+## 📝 Live Editing with Sanity Studio
 
-To learn more about Next.js, take a look at the following resources:
+- Access Sanity Studio at `/studio`
+- Edit products, categories, and sales in real time
+- Changes appear instantly on the site (draft mode supported)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 💳 Stripe Payments
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Secure checkout flow
+- Test mode enabled for development
 
-## Deploy on Vercel
+## 🏁 Getting Started
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Clone the repository:**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```bash
+   git clone https://github.com/your-username/ecomerce-website.git
+   cd ecomerce-website
+   ```
+
+2. **Install dependencies:**
+
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. **Set up environment variables:**
+
+   - Copy `.env.local.example` to `.env.local` and fill in your Sanity and Stripe keys.
+
+4. **Run the development server:**
+
+   ```bash
+   npm run dev
+   ```
+
+5. **Open the app:**
+   - Main site: [http://localhost:3000](http://localhost:3000)
+   - Sanity Studio: [http://localhost:3000/studio](http://localhost:3000/studio)
+
+## 🛠️ Customization
+
+- Update product, category, and sale schemas in `src/sanity/schemaTypes/`
+- Edit UI components in `src/components/`
+
+## 🌐 Deployment
+
+- Easily deploy to [Vercel](https://vercel.com/) or your preferred platform.
+
+## 🙋‍♂️ Author
+
+- **Tanvir** — [LinkedIn/GitHub/Portfolio link if desired]
+
+---
