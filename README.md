@@ -42,9 +42,23 @@ ecomerce-website/
 
 ## 🖥️ Screenshots
 
-- Home page with live sale banner and product grid
-- Basket and order summary
-- Sanity Studio for live content editing
+-## 🖼️ Screenshots
+
+### 🏠 Home Page
+
+![Home Page](./public/screenshots/homepage.png)
+
+### 🛒 Basket
+
+![Basket](./public/screenshots/my_basket.png)
+
+### Order Summary
+
+![order summary](./public/screenshots/my_orders.png)
+
+### 🛠️ Sanity Studio
+
+![Sanity Studio](./public/screenshots/sanity_studio_for_live_editing.png)
 
 _(See `/public` or deployment for visuals)_
 
