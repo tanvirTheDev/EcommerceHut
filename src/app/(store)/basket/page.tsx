@@ -7,7 +7,7 @@ import { SignInButton, useAuth, useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { createCheckoutSession } from "../../../../actions/createCheckoutSession";
+import { createBkashPayment } from "../../../../actions/createBkashPayment";
 
 export type Metadata = {
   orderNumber: string;
@@ -62,13 +62,13 @@ const BasketPage = () => {
 
       console.log("Metadata:", metadata);
 
-      const checkoutUrl = await createCheckoutSession(groupedItems, metadata);
-      console.log("Checkout URL:", checkoutUrl);
+      const result = await createBkashPayment(groupedItems, metadata);
+      console.log("Transaction ID:", result.transactionId);
 
-      if (!checkoutUrl) {
+      if (!result.success) {
         throw new Error("Failed to create checkout session");
       }
-      window.location.href = checkoutUrl;
+      window.location.href = result.transactionId ?? "";
     } catch (error) {
       console.error("Error creating checkout session:", error);
       alert(
@@ -83,7 +83,7 @@ const BasketPage = () => {
     <div className="container mx-auto p-4 max-w-6xl">
       <h1 className="text-2xl font-bold mb-4">Your Basket</h1>
       <div className="flex flex-col lg:flex-row gap-8">
-        <div className="flex-grow">
+        <div className="grow">
           {groupedItems?.map((item) => (
             <div
               key={item.product._id}
@@ -116,7 +116,7 @@ const BasketPage = () => {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center ml-4 flex-shrink-0">
+              <div className="flex items-center ml-4 shrink-0">
                 <AddToBasketButton product={item.product} />
               </div>
             </div>
