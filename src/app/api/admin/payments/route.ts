@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { backendClient } from "@/sanity/lib/backendClient";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -58,7 +59,7 @@ export async function PATCH(request: NextRequest) {
 
     // If verified, also update order status to paid
     if (status === "verified") {
-      updateData.status = "paid";
+      updateData.paymentStatus = "paid";
     }
 
     const result = await backendClient

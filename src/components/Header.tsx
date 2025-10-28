@@ -15,15 +15,15 @@ const Header = () => {
   const itemCount = useBasketStore((state) =>
     state.items.reduce((total, item) => total + item.quantity, 0)
   );
-  const createPassKey = async () => {
-    // Handle passkey click
-    try {
-      const res = await user?.createPasskey();
-      console.log(res);
-    } catch (err) {
-      console.error("Error", JSON.stringify(err, null, 2));
-    }
-  };
+  // const createPassKey = async () => {
+  //   // Handle passkey click
+  //   try {
+  //     const res = await user?.createPasskey();
+  //     console.log(res);
+  //   } catch (err) {
+  //     console.error("Error", JSON.stringify(err, null, 2));
+  //   }
+  // };
   return (
     <header className="flex flex-wrap justify-between items-center px-4 py-2">
       <div className="w-full md:w-1/4 ml-4 md:ml-0">

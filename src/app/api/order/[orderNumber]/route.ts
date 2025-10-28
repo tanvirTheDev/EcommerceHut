@@ -1,12 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { backendClient } from "@/sanity/lib/backendClient";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { orderNumber: string } }
-) {
+export async function GET(request: NextRequest, context: any) {
   try {
-    const { orderNumber } = params;
+    const { orderNumber } = context.params;
 
     if (!orderNumber) {
       return NextResponse.json(
