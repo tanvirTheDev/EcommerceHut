@@ -4,7 +4,7 @@ import { BkashPaymentResult, generateTransactionRef } from "@/lib/bkash";
 import { backendClient } from "@/sanity/lib/backendClient";
 import { BasketItem } from "@/store/store";
 
-export type groupedBasketItem = {
+export type GroupedBasketItem = {
   product: BasketItem["product"];
   quantity: number;
 };
@@ -18,60 +18,68 @@ export type Metadata = {
 };
 
 export const createBkashPayment = async (
-  items: groupedBasketItem[],
+  items: GroupedBasketItem[],
   metadata: Metadata
 ): Promise<BkashPaymentResult> => {
   try {
-    console.log("Creating bKash payment for order:", metadata.orderNumber);
+    console.log(
+      "Starting bKash payment creation for order:",
+      metadata.orderNumber
+    );
 
-    // Check if any items don't have a price
-    const itemsWithoutPrice = items.filter((item) => !item.product.price);
-    if (itemsWithoutPrice.length > 0) {
-      throw new Error("Some items do not have a price");
+    // Validate environment variable
+    if (!process.env.SANITY_API_TOKEN) {
+      throw new Error("SANITY_API_TOKEN is missing in environment variables.");
+    }
+
+    // Validate items array
+    if (!Array.isArray(items) || items.length === 0) {
+      throw new Error("No items provided for payment.");
+    }
+
+    const invalidItems = items.filter(
+      (item) => !item.product || typeof item.product.price !== "number"
+    );
+    if (invalidItems.length > 0) {
+      throw new Error("Some items are invalid or missing price.");
     }
 
     // Calculate total amount
-    const totalAmount = items.reduce((total, item) => {
-      return total + (item.product.price || 0) * item.quantity;
-    }, 0);
-
+    const totalAmount = items.reduce(
+      (sum, item) => sum + (item.product.price || 0) * item.quantity,
+      0
+    );
     if (totalAmount <= 0) {
-      throw new Error("Invalid total amount");
+      throw new Error("Total amount must be greater than zero.");
     }
 
-    console.log("Total amount calculated:", totalAmount);
+    console.log("Total amount:", totalAmount);
 
-    // Create order in Sanity with pending status
+    // Prepare products for Sanity
     const sanityProducts = items.map((item) => ({
       _key: crypto.randomUUID(),
-      product: {
-        _type: "reference",
-        _ref: item.product._id,
-      },
+      product: { _type: "reference", _ref: item.product._id },
       quantity: item.quantity,
     }));
 
-    console.log("Creating order in Sanity...");
-
-    // Check if we have the required environment variables
-    if (!process.env.SANITY_API_TOKEN) {
-      throw new Error(
-        "SANITY_API_TOKEN is not configured. Please add it to your .env.local file."
-      );
-    }
-
-    const order = await backendClient.create({
-      _type: "order",
-      orderNumber: metadata.orderNumber,
-      customerName: metadata.customerName,
-      clerkUserId: metadata.clerkUserId,
-      email: metadata.customerEmail,
-      currency: "BDT",
-      products: sanityProducts,
-      totalPrice: totalAmount,
-      status: "pending", // Will be updated to "paid" after payment confirmation
-      orderDate: new Date().toISOString(),
-    });
+    // Create order in Sanity
+    const order = await backendClient
+      .create({
+        _type: "order",
+        orderNumber: metadata.orderNumber,
+        customerName: metadata.customerName,
+        clerkUserId: metadata.clerkUserId,
+        email: metadata.customerEmail,
+        currency: "BDT",
+        products: sanityProducts,
+        totalPrice: totalAmount,
+        status: "pending",
+        orderDate: new Date().toISOString(),
+      })
+      .catch((err) => {
+        console.error("Sanity order creation failed:", err);
+        throw new Error("Failed to create order in Sanity");
+      });
 
     console.log("Order created successfully:", order._id);
 
@@ -82,10 +90,10 @@ export const createBkashPayment = async (
       orderNumber: metadata.orderNumber,
     };
   } catch (error) {
-    console.error("Error creating bKash payment:", error);
+    console.error("Error in createBkashPayment:", error);
     return {
       success: false,
-      message: `Error creating payment: ${error}`,
+      message: `Error creating payment: ${error instanceof Error ? error.message : String(error)}`,
       orderNumber: metadata.orderNumber,
     };
   }
@@ -96,24 +104,31 @@ export const confirmBkashPayment = async (
   transactionId: string
 ): Promise<BkashPaymentResult> => {
   try {
-    // Update order status to paid
-    const orders = await backendClient.fetch(
+    console.log("Confirming bKash payment for order:", orderNumber);
+
+    const order = await backendClient.fetch(
       `*[_type == "order" && orderNumber == $orderNumber][0]`,
       { orderNumber }
     );
 
-    if (!orders) {
-      throw new Error("Order not found");
+    if (!order) {
+      throw new Error("Order not found in database");
     }
 
     await backendClient
-      .patch(orders._id)
+      .patch(order._id)
       .set({
         status: "paid",
-        stripePaymentIntentId: transactionId, // Reusing this field for bKash transaction ID
-        customerName: orders.customerName,
+        stripePaymentIntentId: transactionId, // storing bKash transaction here
+        customerName: order.customerName,
       })
-      .commit();
+      .commit()
+      .catch((err) => {
+        console.error("Sanity order patch failed:", err);
+        throw new Error("Failed to update order status in Sanity");
+      });
+
+    console.log("Payment confirmed successfully for order:", orderNumber);
 
     return {
       success: true,
@@ -122,10 +137,10 @@ export const confirmBkashPayment = async (
       orderNumber,
     };
   } catch (error) {
-    console.error("Error confirming bKash payment:", error);
+    console.error("Error in confirmBkashPayment:", error);
     return {
       success: false,
-      message: `Error confirming payment: ${error}`,
+      message: `Error confirming payment: ${error instanceof Error ? error.message : String(error)}`,
       orderNumber,
     };
   }
