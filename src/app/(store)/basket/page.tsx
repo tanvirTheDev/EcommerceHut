@@ -13,6 +13,7 @@ export type Metadata = {
   orderNumber: string;
   customerName: string;
   customerEmail: string;
+  customerPhone?: string;
   clerkUserId: string;
 };
 
@@ -24,6 +25,7 @@ const BasketPage = () => {
 
   const [isClient, setIsClient] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [customerPhone, setCustomerPhone] = useState("");
 
   useEffect(() => {
     setIsClient(true);
@@ -46,20 +48,32 @@ const BasketPage = () => {
     setIsLoading(true);
 
     try {
+      console.log("Starting checkout process...");
+      console.log("Grouped items:", groupedItems);
+      console.log("User:", user);
+
       const metadata: Metadata = {
         orderNumber: crypto.randomUUID(),
         customerName: user?.fullName ?? "Unknown",
         customerEmail: user?.emailAddresses[0].emailAddress ?? "Unknown",
+        customerPhone: customerPhone || undefined,
         clerkUserId: user!.id,
       };
+
+      console.log("Metadata:", metadata);
+
       const checkoutUrl = await createCheckoutSession(groupedItems, metadata);
+      console.log("Checkout URL:", checkoutUrl);
+
       if (!checkoutUrl) {
         throw new Error("Failed to create checkout session");
       }
       window.location.href = checkoutUrl;
     } catch (error) {
       console.error("Error creating checkout session:", error);
-      alert("Failed to create checkout session. Please try again.");
+      alert(
+        `Failed to create checkout session: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     } finally {
       setIsLoading(false);
     }
@@ -110,7 +124,7 @@ const BasketPage = () => {
         </div>
 
         <div className="w-full lg:w-80 lg:sticky lg:top-4 h-fit bg-white p-6 border rounded order-first lg:order-last fixed bottom-0 left-0 lg:left-auto">
-          <h3 className="text-xl font-semibold">Order Summery</h3>
+          <h3 className="text-xl font-semibold">Order Summary</h3>
           <div className="mt-4 space-y-2">
             <p className="flex justify-between">
               <span>Items</span>
@@ -123,13 +137,36 @@ const BasketPage = () => {
               <span>{useBasketStore.getState().getTotalPrice()}</span>
             </p>
           </div>
+
+          {isSignedIn && (
+            <div className="mt-4">
+              <label
+                htmlFor="phone"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Phone Number (Optional for bKash)
+              </label>
+              <input
+                type="tel"
+                id="phone"
+                value={customerPhone}
+                onChange={(e) => setCustomerPhone(e.target.value)}
+                placeholder="01XXXXXXXXX"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Enter your phone number for bKash payment confirmation
+              </p>
+            </div>
+          )}
+
           {isSignedIn ? (
             <button
               onClick={handleCheckout}
               disabled={isLoading}
-              className="mt-4 w-full bg-blue-500 text-white px-4 py-3 rounded hover:bg-blue-600 disabled:bg-gray-400"
+              className="mt-4 w-full bg-green-500 text-white px-4 py-3 rounded hover:bg-green-600 disabled:bg-gray-400"
             >
-              {isLoading ? "Processing..." : "Checkout"}
+              {isLoading ? "Processing..." : "Pay with bKash"}
             </button>
           ) : (
             <SignInButton mode="modal">

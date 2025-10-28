@@ -14,17 +14,6 @@ export const orderType = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "stripeCheckoutSessionId",
-      title: "Stripe Checkout Session ID",
-      type: "string",
-    }),
-    defineField({
-      name: "stripeCustomerId",
-      title: "Stripe Customer ID",
-      type: "string",
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
       name: "clerkUserId",
       title: "Store User ID",
       type: "string",
@@ -41,12 +30,6 @@ export const orderType = defineType({
       title: "Customer Email",
       type: "string",
       validation: (Rule) => Rule.required().email(),
-    }),
-    defineField({
-      name: "stripePaymentIntentId",
-      title: "Stripe Payment Intent ID",
-      type: "string",
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "products",
@@ -118,12 +101,61 @@ export const orderType = defineType({
           { title: "Cancelled", value: "cancelled" },
         ],
       },
+      initialValue: "pending",
     }),
     defineField({
       name: "orderDate",
       title: "Order Date",
       type: "datetime",
       validation: (Rule) => Rule.required(),
+      initialValue: () => new Date().toISOString(),
+    }),
+    // bKash Payment Verification Fields
+    defineField({
+      name: "transactionId",
+      title: "bKash Transaction ID",
+      type: "string",
+      description: "Transaction ID provided by customer from bKash payment",
+    }),
+    defineField({
+      name: "senderNumber",
+      title: "Sender Phone Number",
+      type: "string",
+      description: "Phone number used to send bKash payment",
+    }),
+    defineField({
+      name: "paymentSubmittedAt",
+      title: "Payment Submitted At",
+      type: "datetime",
+      initialValue: () => new Date().toISOString(),
+      description: "When the customer submitted their payment verification",
+    }),
+    defineField({
+      name: "paymentStatus",
+      title: "Payment Verification Status",
+      type: "string",
+      options: {
+        list: [
+          { title: "Pending Verification", value: "pending_verification" },
+          { title: "Verified", value: "verified" },
+          { title: "Rejected", value: "rejected" },
+        ],
+      },
+      initialValue: "pending_verification",
+      description: "Status of payment verification by admin",
+    }),
+    defineField({
+      name: "paymentVerifiedAt",
+      title: "Payment Verified At",
+      type: "datetime",
+      initialValue: () => new Date().toISOString(),
+      description: "When the admin verified or rejected the payment",
+    }),
+    defineField({
+      name: "paymentNotes",
+      title: "Payment Notes",
+      type: "text",
+      description: "Admin notes about the payment verification",
     }),
   ],
   preview: {
@@ -133,12 +165,17 @@ export const orderType = defineType({
       currency: "currency",
       orderId: "orderNumber",
       email: "email",
+      status: "status",
+      paymentStatus: "paymentStatus",
     },
     prepare(select) {
       const orderIdSnippet = `${select.orderId.slice(0, 5)}...${select.orderId.slice(-5)}`;
+      const paymentStatus = select.paymentStatus
+        ? ` | Payment: ${select.paymentStatus}`
+        : "";
       return {
         title: `${select.name} (${orderIdSnippet})`,
-        subtitle: `${select.amount} ${select.currency}, ${select.email}`,
+        subtitle: `${select.amount} ${select.currency} | ${select.status}${paymentStatus}`,
         media: BasketIcon,
       };
     },

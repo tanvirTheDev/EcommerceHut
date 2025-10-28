@@ -8,8 +8,9 @@ import { useEffect } from "react";
 
 const SuccessPage = () => {
   const searchParams = useSearchParams();
-  //   const sessionId = searchParams.get("orderNumber");
   const orderNumber = searchParams.get("orderNumber");
+  const transactionId = searchParams.get("transactionId");
+  const status = searchParams.get("status");
   const clearBasket = useBasketStore((state) => state.clearBasket);
 
   useEffect(() => {
@@ -38,25 +39,33 @@ const SuccessPage = () => {
           </div>
         </div>
         <h1 className="text-4xl font-bold mb-6 text-center">
-          Thank you for your order
+          {status === "pending_verification"
+            ? "Payment Submitted! 📱"
+            : "Payment Successful! 🎉"}
         </h1>
         <div className="border-t border-b border-gray-200 py-6 mb-6">
-          <p>Your order has been confirmed and will be shipped shortly.</p>
+          <p className="text-center mb-4">
+            {status === "pending_verification"
+              ? "Your payment details have been submitted for verification. We'll confirm your payment within 24 hours and process your order."
+              : "Your bKash payment has been confirmed and your order will be processed shortly."}
+          </p>
           <div className="space-y-2">
             {orderNumber && (
-              <p className="text-gray-600 flex items-center space-x-5">
+              <p className="text-gray-600 flex items-center justify-between">
                 <span>Order Number:</span>
                 <span className="font-mono text-sm text-green-600">
                   {orderNumber}
                 </span>
               </p>
             )}
-            {/* {sessionId && (
-              <p className="text-gray-600 flex justify-between">
+            {transactionId && (
+              <p className="text-gray-600 flex items-center justify-between">
                 <span>Transaction ID:</span>
-                <span className="font-mono text-sm">{sessionId}</span>
+                <span className="font-mono text-sm text-blue-600">
+                  {transactionId}
+                </span>
               </p>
-            )} */}
+            )}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-5">
               <Button asChild className="bg-green-600 hover:bg-geen-700">
                 <Link href="/orders">View Orders Details</Link>

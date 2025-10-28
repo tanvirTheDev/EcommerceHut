@@ -1,13 +1,13 @@
 "use server";
 
-import { imageUrl } from "@/lib/imageUrl";
-import stripe from "@/lib/stripe";
 import { BasketItem } from "@/store/store";
+import { createBkashPayment } from "./createBkashPayment";
 
 export type Metadata = {
   orderNumber: string;
   customerName: string;
   customerEmail: string;
+  customerPhone?: string;
   clerkUserId: string;
 };
 
@@ -21,54 +21,33 @@ export const createCheckoutSession = async (
   metadata: Metadata
 ) => {
   try {
-    // check if any grouped items dont have a price
-    const itemsWithoutprice = items.filter((item) => !item.product.price);
-    if (itemsWithoutprice.length > 0) {
+    console.log("Creating checkout session for order:", metadata.orderNumber);
+    console.log("Items:", items.length);
+
+    // Check if any grouped items don't have a price
+    const itemsWithoutPrice = items.filter((item) => !item.product.price);
+    if (itemsWithoutPrice.length > 0) {
       throw new Error("Some items do not have a price");
     }
 
-    // search for existing customer by email
-    const customers = await stripe.customers.list({
-      email: metadata.customerEmail,
-      limit: 1,
-    });
+    console.log("Creating bKash payment...");
+    // Create bKash payment
+    const paymentResult = await createBkashPayment(items, metadata);
 
-    let customerId: string | undefined;
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
+    console.log("Payment result:", paymentResult);
+
+    if (!paymentResult.success) {
+      throw new Error(paymentResult.message);
     }
 
+    // Return the bKash payment page URL instead of Stripe checkout URL
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const paymentUrl = `${baseUrl}/bkash-payment?orderNumber=${metadata.orderNumber}&transactionId=${paymentResult.transactionId}`;
 
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      customer_creation: customerId ? undefined : "always",
-      customer_email: !customerId ? metadata.customerEmail : undefined,
-      metadata,
-      mode: "payment",
-      allow_promotion_codes: true,
-      success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}&orderNumber=${metadata.orderNumber}`,
-      cancel_url: `${baseUrl}/basket`,
-      line_items: items.map((item) => ({
-        price_data: {
-          currency: "gbp",
-          unit_amount: Math.round(item.product.price! * 100),
-          product_data: {
-            name: item.product.name || "Unnamed Product",
-            description: `Product ID: ${item.product._id}`,
-            metadata: {
-              id: item.product._id,
-            },
-            images: item.product.image
-              ? [imageUrl(item.product.image).url()]
-              : undefined,
-          },
-        },
-        quantity: item.quantity,
-      })),
-    });
-    return session.url;
+    console.log("Redirecting to:", paymentUrl);
+    return paymentUrl;
   } catch (error) {
     console.error("Error creating checkout session:", error);
+    throw error;
   }
 };

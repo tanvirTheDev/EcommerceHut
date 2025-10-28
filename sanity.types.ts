@@ -68,6 +68,24 @@ export type Geopoint = {
   alt?: number;
 };
 
+export type PaymentVerification = {
+  _id: string;
+  _type: "paymentVerification";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  orderNumber?: string;
+  transactionId?: string;
+  senderNumber?: string;
+  amount?: number;
+  customerName?: string;
+  customerEmail?: string;
+  status?: "pending_verification" | "verified" | "rejected";
+  submittedAt?: string;
+  verifiedAt?: string;
+  notes?: string;
+};
+
 export type Sale = {
   _id: string;
   _type: "sale";
@@ -90,12 +108,9 @@ export type Order = {
   _updatedAt: string;
   _rev: string;
   orderNumber?: string;
-  stripeCheckoutSessionId?: string;
-  stripeCustomerId?: string;
   clerkUserId?: string;
   customerName?: string;
   email?: string;
-  stripePaymentIntentId?: string;
   products?: Array<{
     product?: {
       _ref: string;
@@ -111,6 +126,12 @@ export type Order = {
   amountDiscount?: number;
   status?: "pending" | "paid" | "shipped" | "delivered" | "cancelled";
   orderDate?: string;
+  transactionId?: string;
+  senderNumber?: string;
+  paymentSubmittedAt?: string;
+  paymentStatus?: "pending_verification" | "verified" | "rejected";
+  paymentVerifiedAt?: string;
+  paymentNotes?: string;
 };
 
 export type Product = {
@@ -281,7 +302,7 @@ export type SanityImageMetadata = {
   isOpaque?: boolean;
 };
 
-export type AllSanitySchemaTypes = SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityFileAsset | Geopoint | Sale | Order | Product | Category | Slug | BlockContent | SanityImageCrop | SanityImageHotspot | SanityImageAsset | SanityAssetSourceData | SanityImageMetadata;
+export type AllSanitySchemaTypes = SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityFileAsset | Geopoint | PaymentVerification | Sale | Order | Product | Category | Slug | BlockContent | SanityImageCrop | SanityImageHotspot | SanityImageAsset | SanityAssetSourceData | SanityImageMetadata;
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./src/sanity/lib/products/getAllCategories.tsx
 // Variable: ALL_CATEGORIES_QUERY
@@ -585,12 +606,9 @@ export type MY_ORDERS_QUERYResult = Array<{
   _updatedAt: string;
   _rev: string;
   orderNumber?: string;
-  stripeCheckoutSessionId?: string;
-  stripeCustomerId?: string;
   clerkUserId?: string;
   customerName?: string;
   email?: string;
-  stripePaymentIntentId?: string;
   products: Array<{
     product: {
       _id: string;
@@ -661,6 +679,12 @@ export type MY_ORDERS_QUERYResult = Array<{
   amountDiscount?: number;
   status?: "cancelled" | "delivered" | "paid" | "pending" | "shipped";
   orderDate?: string;
+  transactionId?: string;
+  senderNumber?: string;
+  paymentSubmittedAt?: string;
+  paymentStatus?: "pending_verification" | "rejected" | "verified";
+  paymentVerifiedAt?: string;
+  paymentNotes?: string;
 }>;
 
 // Query TypeMap
