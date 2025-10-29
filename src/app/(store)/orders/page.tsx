@@ -49,15 +49,32 @@ const Orders = async () => {
                   </div>
 
                   {/* status */}
-                  <div className="flex flex-col gpa-4 sm:flex-row sm:jsutify-between sm:items-center">
-                    <div className="flex items-center">
-                      <span className="text-sm mr-2">Status:</span>
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm ${order.status === "paid" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}
-                      >
-                        {order.status}
-                      </span>
+                  <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
+                    <div>
+                      <div className="flex items-center mb-2">
+                        <span className="text-sm mr-2">Status:</span>
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm ${
+                            order.status === "paid"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-gray-100 text-gray-800"
+                          }`}
+                        >
+                          {order.status}
+                        </span>
+                      </div>
+
+                      {/* ✅ Payment Method */}
+                      <div className="flex items-center">
+                        <span className="text-sm mr-2">Payment Method:</span>
+                        <span className="px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800">
+                          {order.paymentMethod === "cod"
+                            ? "Cash on Delivery"
+                            : "bKash"}
+                        </span>
+                      </div>
                     </div>
+
                     <div className="sm:text-right">
                       <p className="text-m text-gray-600 mb-1">Total Amount</p>
                       <p className="text-lg font-bold">
@@ -65,6 +82,7 @@ const Orders = async () => {
                       </p>
                     </div>
                   </div>
+
                   {/* discount amount */}
                   {order.amountDiscount ? (
                     <div className="mt-4 p-3 sm:p-4 bg-red-50 rounded-lg">
@@ -95,7 +113,7 @@ const Orders = async () => {
                       >
                         <div className="flex items-center gpa-3 sm:gap-4">
                           {product.product?.image && (
-                            <div className="relative size-14 sm:size-16 flex-shrink-0 rounded-md overflow-hidden">
+                            <div className="relative size-14 sm:size-16 shrink-0 rounded-md overflow-hidden">
                               <Image
                                 src={imageUrl(product.product.image).url()}
                                 alt={product.product?.name || "Product image"}

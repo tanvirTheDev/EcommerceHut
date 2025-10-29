@@ -9,17 +9,26 @@ export type GroupedBasketItem = {
   quantity: number;
 };
 
-export type Metadata = {
+export interface ShippingAddress {
+  fullName: string;
+  phone: string;
+  district: string;
+  address: string;
+}
+
+export interface Metadata {
   orderNumber: string;
   customerName: string;
   customerEmail: string;
   customerPhone?: string;
   clerkUserId: string;
-};
+  shippingAddress: ShippingAddress;
+}
 
 export const createBkashPayment = async (
   items: GroupedBasketItem[],
-  metadata: Metadata
+  metadata: Metadata,
+  paymentMethod = "bkash"
 ): Promise<BkashPaymentResult> => {
   try {
     console.log(
@@ -73,13 +82,30 @@ export const createBkashPayment = async (
         currency: "BDT",
         products: sanityProducts,
         totalPrice: totalAmount,
-        status: "pending",
         orderDate: new Date().toISOString(),
+        paymentMethod, // 👈 Added
+        status: paymentMethod === "cod" ? "pending" : "pending",
+        paymentStatus:
+          paymentMethod === "cod"
+            ? "pending_verification"
+            : "pending_verification",
+        shippingAddress: metadata.shippingAddress,
       })
       .catch((err) => {
         console.error("Sanity order creation failed:", err);
         throw new Error("Failed to create order in Sanity");
       });
+
+    // Save or process payment differently based on method
+    if (paymentMethod === "cod") {
+      // ✅ For Cash on Delivery
+      return {
+        success: true,
+        message: "Order placed successfully (Cash on Delivery)",
+        orderNumber: metadata.orderNumber,
+        redirectUrl: `/success?orderNumber=${metadata.orderNumber}&status=pending`,
+      };
+    }
 
     console.log("Order created successfully:", order._id);
 
@@ -93,7 +119,9 @@ export const createBkashPayment = async (
     console.error("Error in createBkashPayment:", error);
     return {
       success: false,
-      message: `Error creating payment: ${error instanceof Error ? error.message : String(error)}`,
+      message: `Error creating payment: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
       orderNumber: metadata.orderNumber,
     };
   }
@@ -140,7 +168,9 @@ export const confirmBkashPayment = async (
     console.error("Error in confirmBkashPayment:", error);
     return {
       success: false,
-      message: `Error confirming payment: ${error instanceof Error ? error.message : String(error)}`,
+      message: `Error confirming payment: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
       orderNumber,
     };
   }

@@ -9,7 +9,9 @@ export const BKASH_CONFIG = {
     "1. Open your bKash app",
     "2. Go to 'Send Money'",
     "3. Enter the amount shown below",
-    `4. Enter the bKash number: ${process.env.NEXT_PUBLIC_BKASH_NUMBER || "01XXXXXXXXX"}`,
+    `4. Enter the bKash number: ${
+      process.env.NEXT_PUBLIC_BKASH_NUMBER || "01XXXXXXXXX"
+    }`,
     "5. Complete the transaction",
     "6. Take a screenshot of the payment confirmation",
     "7. Click 'Confirm Payment' below",
@@ -34,6 +36,7 @@ export interface BkashPaymentResult {
   transactionId?: string;
   message: string;
   orderNumber: string;
+  redirectUrl?: string;
 }
 
 // Generate a unique transaction reference

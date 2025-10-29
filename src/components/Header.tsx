@@ -25,15 +25,14 @@ const Header = () => {
   //   }
   // };
   return (
-    <header className="flex flex-wrap justify-between items-center px-4 py-2">
-      <div className="w-full md:w-1/4 ml-4 md:ml-0">
-        <Link
-          href="/"
-          className="text-2xl font-bold text-blue-500 hover:opacity-50 cursor-pointer sm:ml-4"
-        >
-          Sibling Basket
-        </Link>
-      </div>
+    <header className="flex flex-wrap justify-between items-center bg-white shadow-md px-4 py-3">
+      <Link
+        href="/"
+        className="text-2xl font-extrabold text-blue-600 hover:text-orange-500 transition"
+      >
+        Sibling Basket
+      </Link>
+
       {/* Top Row */}
       <div className="flex flex-wrap justify-end items-center px-4 py-2 w-3/4">
         <Form action="/search" className="sm:flex-1 sm:mx-4 sm:mt-0 w-full">

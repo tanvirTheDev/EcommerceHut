@@ -89,6 +89,19 @@ export const orderType = defineType({
       validation: (Rule) => Rule.min(0),
     }),
     defineField({
+      name: "paymentMethod",
+      title: "Payment Method",
+      type: "string",
+      options: {
+        list: [
+          { title: "bKash", value: "bkash" },
+          { title: "Cash on Delivery", value: "cod" },
+        ],
+      },
+      initialValue: "bkash",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: "status",
       title: "Order Status",
       type: "string",
@@ -152,6 +165,43 @@ export const orderType = defineType({
       description: "When the admin verified or rejected the payment",
     }),
     defineField({
+      name: "shippingAddress",
+      title: "Shipping Address",
+      type: "object",
+      fields: [
+        defineField({
+          name: "fullName",
+          title: "Full Name",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+          name: "phone",
+          title: "Phone Number",
+          type: "string",
+          validation: (Rule) =>
+            Rule.required().regex(/^01[3-9]\d{8}$/, {
+              name: "valid Bangladeshi number",
+              invert: false,
+            }),
+        }),
+        defineField({
+          name: "district",
+          title: "District",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+          name: "address",
+          title: "Full Address",
+          type: "text",
+          validation: (Rule) => Rule.required().min(5),
+        }),
+      ],
+      validation: (Rule) => Rule.required(),
+    }),
+
+    defineField({
       name: "paymentNotes",
       title: "Payment Notes",
       type: "text",
@@ -167,15 +217,21 @@ export const orderType = defineType({
       email: "email",
       status: "status",
       paymentStatus: "paymentStatus",
+      district: "shippingAddress.district", // ✅ added
     },
     prepare(select) {
-      const orderIdSnippet = `${select.orderId.slice(0, 5)}...${select.orderId.slice(-5)}`;
+      const orderIdSnippet = `${select.orderId.slice(
+        0,
+        5
+      )}...${select.orderId.slice(-5)}`;
       const paymentStatus = select.paymentStatus
         ? ` | Payment: ${select.paymentStatus}`
         : "";
+      const district = select.district ? ` | ${select.district}` : ""; // ✅ show district if available
+
       return {
         title: `${select.name} (${orderIdSnippet})`,
-        subtitle: `${select.amount} ${select.currency} | ${select.status}${paymentStatus}`,
+        subtitle: `${select.amount} ${select.currency} | ${select.status}${paymentStatus}${district}`,
         media: BasketIcon,
       };
     },
