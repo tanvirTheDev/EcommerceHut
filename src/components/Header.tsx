@@ -8,85 +8,186 @@ import {
   useUser,
 } from "@clerk/nextjs";
 import { PackageIcon, TrolleyIcon } from "@sanity/icons";
+import { Menu, Search, X } from "lucide-react";
 import Form from "next/form";
 import Link from "next/link";
+import { useState } from "react";
+
 const Header = () => {
   const { user } = useUser();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const itemCount = useBasketStore((state) =>
     state.items.reduce((total, item) => total + item.quantity, 0)
   );
-  // const createPassKey = async () => {
-  //   // Handle passkey click
-  //   try {
-  //     const res = await user?.createPasskey();
-  //     console.log(res);
-  //   } catch (err) {
-  //     console.error("Error", JSON.stringify(err, null, 2));
-  //   }
-  // };
-  return (
-    <header className="flex flex-wrap justify-between items-center bg-white shadow-md px-4 py-3">
-      <Link
-        href="/"
-        className="text-2xl font-extrabold text-blue-600 hover:text-orange-500 transition"
-      >
-        Sibling Basket
-      </Link>
 
-      {/* Top Row */}
-      <div className="flex flex-wrap justify-end items-center px-4 py-2 w-3/4">
-        <Form action="/search" className="sm:flex-1 sm:mx-4 sm:mt-0 w-full">
-          <input
-            type="text"
-            placeholder="Search for products"
-            name="query"
-            className="bg-gray-100 text-gray-800 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 border w-full max-w-4xl"
-          />
-        </Form>
-        <div className="flex items-center space-x-4 mt-4 flex-1 sm:flex-none md:mt-0">
-          <Link
-            href="/basket"
-            className="flex-1 relative flex justify-center sm:justify-start sm:flex-none items-center space-x-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            <TrolleyIcon className="size-6" />
-            {/* span item count once global state is implemented */}
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-              {itemCount}
-            </span>
-            <span className="">My Orders</span>
-          </Link>
-          {/* user area */}
-          <ClerkLoaded>
-            <SignedIn>
-              <Link
-                href="/orders"
-                className="flex-1 relative flex justify-center sm:justify-start sm:flex-none items-center space-x-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                <PackageIcon className="size-6" />
-                <span className="">My Orders</span>
-              </Link>
-            </SignedIn>
-            {user ? (
-              <div className="flex justify-center space-x-2">
-                <UserButton />
-                <div className="hidden sm:block text-xs">
-                  <p className="text-gray-400">Welcome Back</p>
-                  <p className="font-bold">{user.firstName}</p>
-                </div>
+  return (
+    <header className="sticky top-0 z-50 w-full bg-white shadow-md border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Main Header */}
+        <div className="flex items-center justify-between h-16 sm:h-20">
+          {/* Logo */}
+          <div className="flex items-center shrink-0">
+            <Link
+              href="/"
+              className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-blue-600 hover:text-orange-500 transition-colors duration-200"
+            >
+              EcommerceHut
+            </Link>
+          </div>
+
+          {/* Desktop Search Bar - Hidden on mobile */}
+          <div className="hidden md:flex flex-1 max-w-2xl mx-4 lg:mx-8">
+            <Form action="/search" className="w-full">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  name="query"
+                  placeholder="Search for products..."
+                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                />
               </div>
-            ) : (
-              <SignInButton mode="modal" />
-            )}
-            {/* {user?.passkeys.length === 0 && (
-              <button
-                onClick={createPassKey}
-                className="bg-white text-blue-500 hover:bg-blue-700 hover:text-white font-bold py-2 px-4 rounded animate-pulse border border-blue-300 transition-all duration-300 ease-in-out"
-              >
-                Create a Passkey Now
-              </button>
-            )} */}
-          </ClerkLoaded>
+            </Form>
+          </div>
+
+          {/* Right Side Actions */}
+          <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
+            {/* Mobile Search Button */}
+            <button
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              className="md:hidden p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+              aria-label="Search"
+            >
+              <Search className="w-6 h-6" />
+            </button>
+
+            {/* Basket/Cart Button */}
+            <Link
+              href="/basket"
+              className="relative p-2 sm:px-3 sm:py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-100 rounded-lg transition-all duration-200 group"
+              aria-label="Shopping Basket"
+            >
+              <TrolleyIcon className="w-6 h-6 sm:w-5 sm:h-5" />
+              {itemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse group-hover:animate-none">
+                  {itemCount > 9 ? "9+" : itemCount}
+                </span>
+              )}
+              <span className="hidden sm:inline-block ml-2 text-sm font-medium">
+                Basket
+              </span>
+            </Link>
+
+            {/* User Account */}
+            <ClerkLoaded>
+              <SignedIn>
+                {/* Orders Link - Desktop */}
+                <Link
+                  href="/orders"
+                  className="hidden lg:flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
+                >
+                  <PackageIcon className="w-5 h-5" />
+                  <span className="text-sm font-medium">Orders</span>
+                </Link>
+              </SignedIn>
+
+              {/* User Button */}
+              <div className="flex items-center">
+                {user ? (
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <UserButton />
+                    <div className="hidden xl:block text-left">
+                      <p className="text-xs text-gray-500">Welcome Back</p>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {user.firstName || user.emailAddresses[0]?.emailAddress}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="hidden sm:block">
+                    <SignInButton mode="modal">
+                      <button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition-colors duration-200 text-sm">
+                        Sign In
+                      </button>
+                    </SignInButton>
+                  </div>
+                )}
+              </div>
+            </ClerkLoaded>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+              aria-label="Menu"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Search Bar - Toggle */}
+        {isSearchOpen && (
+          <div className="md:hidden pb-4 transition-all duration-200 ease-in-out">
+            <Form action="/search" className="w-full">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  name="query"
+                  placeholder="Search for products..."
+                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  autoFocus
+                />
+              </div>
+            </Form>
+          </div>
+        )}
+
+        {/* Mobile Menu - Toggle */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-gray-200 py-4 transition-all duration-200 ease-in-out">
+            <nav className="flex flex-col space-y-3">
+              <ClerkLoaded>
+                <SignedIn>
+                  <Link
+                    href="/orders"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                  >
+                    <PackageIcon className="w-5 h-5" />
+                    <span className="font-medium">My Orders</span>
+                  </Link>
+                </SignedIn>
+                {!user && (
+                  <div className="px-4">
+                    <SignInButton mode="modal">
+                      <button
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition-colors duration-200"
+                      >
+                        Sign In
+                      </button>
+                    </SignInButton>
+                  </div>
+                )}
+              </ClerkLoaded>
+              <Link
+                href="/categories"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+              >
+                <PackageIcon className="w-5 h-5" />
+                <span className="font-medium">Categories</span>
+              </Link>
+            </nav>
+          </div>
+        )}
       </div>
     </header>
   );

@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { VisualEditing } from "next-sanity";
 import { draftMode } from "next/headers";
+import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 import "../globals.css";
 
@@ -20,17 +21,18 @@ export default async function RootLayout({
   return (
     <ClerkProvider dynamic>
       <html lang="en">
-        <body>
+        <body className="flex flex-col min-h-screen">
           {(await draftMode()).isEnabled && (
             <>
               <DisableDraftMode />
               <VisualEditing />
             </>
           )}
-          <main>
+          <main className="flex-1">
             <Header />
             {children}
           </main>
+          <Footer />
           <SanityLive />
         </body>
       </html>

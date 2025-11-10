@@ -157,6 +157,19 @@ export type Category = {
   title?: string;
   slug?: Slug;
   description?: string;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  isCustomizable?: boolean;
 };
 
 export type BlockContent = Array<{
@@ -323,6 +336,19 @@ export type ALL_CATEGORIES_QUERYResult = Array<{
   title?: string;
   slug?: Slug;
   description?: string;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  isCustomizable?: boolean;
 }>;
 
 // Source: ./src/sanity/lib/products/getAllProducts.ts
